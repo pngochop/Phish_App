@@ -1,11 +1,10 @@
 package edu.uw.tcss450;
 
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,31 +16,24 @@ import android.widget.EditText;
 import model.Credentials;
 
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link RegisterFragment.OnRegisterFragmentInteractionListener} interface
- * to handle interaction events.
- */
 public class RegisterFragment extends Fragment {
-
-    private OnRegisterFragmentInteractionListener mListener;
 
     public RegisterFragment() {
         // Required empty public constructor
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_register, container, false);
+        return inflater.inflate(R.layout.fragment_register, container, false);
+    }
 
+
+    @Override
+    public void onViewCreated(View view, Bundle args) {
         Button registerButton = view.findViewById(R.id.register_register_button);
         registerButton.setOnClickListener(this::succesfulReg);
-
-        return view;
     }
 
 
@@ -98,42 +90,16 @@ public class RegisterFragment extends Fragment {
         Credentials userLogin = userInfo.build();
         //end building credentials
 
-        mListener.onRegisterSuccess(userLogin);
-    }
+        //bundle and set args to pass to fragment
+        Bundle args = new Bundle();
+        args.putSerializable("user", userLogin);
 
-
-
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnRegisterFragmentInteractionListener) {
-            mListener = (OnRegisterFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+        NavController nc = Navigation.findNavController(getView());
+        if (nc.getCurrentDestination().getId() != R.id.registerFragment) {
+            nc.navigateUp();
         }
+        nc.navigate(R.id.action_registerFragment_to_successFragment, args);
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnRegisterFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onRegisterFragmentInteraction(Uri uri);
-        void onRegisterSuccess(Credentials creds);
-    }
 }

@@ -5,6 +5,8 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,16 +17,7 @@ import android.widget.EditText;
 
 import model.Credentials;
 
-
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link LoginFragment.OnLoginFragmentInteractionListener} interface
- * to handle interaction events.
- */
 public class LoginFragment extends Fragment {
-
-    private OnLoginFragmentInteractionListener mListener;
 
     public LoginFragment() {
         // Required empty public constructor
@@ -35,16 +28,25 @@ public class LoginFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_login, container, false);
+        return inflater.inflate(R.layout.fragment_login, container, false);
+    }
 
+    @Override
+    public void onViewCreated(View view, Bundle args) {
         Button registerButton = view.findViewById(R.id.main_register_button);
         Button loginButton = view.findViewById(R.id.main_login_button);
 
         registerButton.setOnClickListener(this::regClicked);
         loginButton.setOnClickListener(this::loginClicked);
 
-        return view;
+
+        //ease of use fillers
+        EditText email = getView().findViewById(R.id.main_email_text);
+        EditText password = getView().findViewById(R.id.main_password_text);
+        email.setText("SuperDuper@gmail.com");
+        password.setText("123456");
     }
+
 
     private void loginClicked(View view) {
         //get email from textfield
@@ -79,46 +81,22 @@ public class LoginFragment extends Fragment {
         Credentials userLogin = userInfo.build();
         //end building credentials
 
-        mListener.onLoginSuccess(userLogin, null);
+        Bundle args = new Bundle();
+        args.putSerializable("user", userLogin);
+
+        NavController nc = Navigation.findNavController(getView());
+        if (nc.getCurrentDestination().getId() != R.id.loginFragment) {
+            nc.navigateUp();
+        }
+        nc.navigate(R.id.action_loginFragment_to_successFragment, args);
+
     }
 
     private void regClicked(View view) {
-        mListener.onRegisterClicked();
-    }
-
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnLoginFragmentInteractionListener) {
-            mListener = (OnLoginFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+        NavController nc = Navigation.findNavController(getView());
+        if (nc.getCurrentDestination().getId() != R.id.loginFragment) {
+            nc.navigateUp();
         }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnLoginFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onLoginFragmentInteraction(Uri uri);
-        void onLoginSuccess(Credentials creds, String jwt);
-        void onRegisterClicked();
-
+        nc.navigate(R.id.action_loginFragment_to_registerFragment);
     }
 }
