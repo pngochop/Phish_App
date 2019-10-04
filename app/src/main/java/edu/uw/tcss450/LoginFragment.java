@@ -18,7 +18,7 @@ import android.widget.EditText;
 import model.Credentials;
 
 public class LoginFragment extends Fragment {
-
+    //test
     public LoginFragment() {
         // Required empty public constructor
     }
