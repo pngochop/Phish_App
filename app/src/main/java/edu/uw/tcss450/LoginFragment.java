@@ -19,6 +19,7 @@ import model.Credentials;
 
 public class LoginFragment extends Fragment {
     //test
+    //Test Hop Pham
     public LoginFragment() {
         // Required empty public constructor
     }
